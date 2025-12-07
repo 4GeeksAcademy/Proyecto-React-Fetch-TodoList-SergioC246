@@ -2,7 +2,10 @@ import { useState } from 'react';
 
 
 export const ToDoList = () => {
+     
     const [ inputValue, setInputValue ] = useState('');
+
+
 
     return (
         <div className='container'>
@@ -12,7 +15,7 @@ export const ToDoList = () => {
                     placeholder='Agrega tu tarea'>
                 </input>
                 </li>
-                <li>Preparar el CV para trabajar</li>
+                <li>Entender React</li>
                 <li>Ir preparado a la mentoría con Facundo</li>
             </ul>
         </div>
