@@ -1,30 +1,35 @@
 import { useState } from 'react';
 
-
 export const ToDoList = () => {
-     
-    const [ cajaAuxiliar, setCajaAuxiliar ] = useState('')
-    const [ listaTareas, setListaTareas ] = useState(['Ir preparado a la mentoría con Facundo' , 'Entender React'])
 
-
-
+    const [cajaAuxiliar, setCajaAuxiliar] = useState('')
+    const [listaTareas, setListaTareas] = useState([ ])
 
     return (
         <div className='container'>
             <ul>
-                <li><input 
+                <li><input
                     onChange={(evento) => setCajaAuxiliar(evento.target.value)}
                     onKeyDown={(evento) => {
                         if (evento.key === 'Enter') {
-                            console.log('Acabas de presionar el enter')
+                            if (cajaAuxiliar != '') {
+                                setListaTareas([cajaAuxiliar, ...listaTareas])
+                                evento.target.value = ''
+                                setCajaAuxiliar('')
+                            }
                         }
                     }}
                     type='text'
                     placeholder='Agrega tu tarea'>
                 </input>
-                </li>              
+                </li>
+
+                {
+                    listaTareas.map((tarea) => {
+                        return <p>{tarea}</p>
+                    })
+                }
             </ul>
-            <p>El valor de cajaAuxiliar es: {cajaAuxiliar}</p>
         </div>
     );
 }

@@ -1,14 +1,4 @@
-/* 
 
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
-
-*/
 
 ul li {
     border: 1px solid grey;
@@ -18,4 +8,8 @@ ul li {
 input {
     border: none;
     width: 100%;
+}
+
+p {
+    border: 1px solid grey;
 }
