@@ -6,15 +6,13 @@ export const ToDoListFetch = () => {
   const user = 'Sergio';
 
   const [newTask, setNewTask] = useState('');
-  const [editTask, setEditTask] = useState('');
-  const [editCompleted, setEditCompleted] = useState(false);
+  const [editTask, setEditTask] = useState('');  
   const [todos, setTodos] = useState([]);
   const [editTodo, setEditTodo] = useState({});
   const [isEdit, setIsEdit] = useState(false);
 
   const handleNewTask = (event) => setNewTask(event.target.value);
-  const handleEditTask = (event) => setEditTask(event.target.value);
-  const handleEditCompleted = (event) => setEditCompleted(event.target.checked);
+  const handleEditTask = (event) => setEditTask(event.target.value);  
 
   /* API functions */
 
@@ -73,7 +71,7 @@ export const ToDoListFetch = () => {
       },
       body: JSON.stringify({
         label: editTask,
-        is_done: editCompleted,
+        is_done: editTodo.is_done,
       }),
     };
     const response = await fetch(uri, options);
@@ -84,7 +82,7 @@ export const ToDoListFetch = () => {
   };
 
   const handleDelete = async (id) => {
-    const uri = `${baseURL}/todos${id}`;
+    const uri = `${baseURL}/todos/${id}`;
     const options = {
       method: 'DELETE',
     };
@@ -95,25 +93,46 @@ export const ToDoListFetch = () => {
     getTodos();
   };
 
-  const handleClearAll = async () => {
-    const uri = `${baseURL}/users/${user}`;
+  const toggleTaskDone = async (todo) => {
+    const uri = `${baseURL}/todos/${todo.id}`;
     const options = {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        label: todo.label,
+        is_done: !todo.is_done,
+      }),
+    };
+
+    const response = await fetch(uri, options);
+    if (!response.ok) return;
+
+    getTodos();
+  };
+
+  const handleClearAll = async () => {
+    const deleteUri = `${baseURL}/users/${user}`;
+    const createUri = `${baseURL}/users/${user}`;
+
+    await fetch(deleteUri, {method: 'DELETE'});
+
+    await fetch(createUri, {
+      method: 'POST',
       headers: {
         "Content-Type": 'application/json',
       },
       body: JSON.stringify([]),
-    };
+    });
 
-    await fetch(uri, options);
-    setTodos([]);
+    getTodos();
   };
 
   const handleEdit = (todo) => {
     setIsEdit(true)
     setEditTodo(todo)
-    setEditTask(todo.label)
-    setEditCompleted(todo.is_done)
+    setEditTask(todo.label)    
   };
 
 
@@ -138,17 +157,7 @@ export const ToDoListFetch = () => {
               value={editTask}
               onChange={handleEditTask}
             />
-          </div>
-
-          <div className="text-start mb-3 form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              checked={editCompleted}
-              onChange={handleEditCompleted}
-            />
-            <label className="form-check-label">Completed</label>
-          </div>
+          </div>          
 
           <button type="submit" className="btn btn-primary me-2">
             Submit
@@ -163,7 +172,7 @@ export const ToDoListFetch = () => {
       ) : (
         <form onSubmit={handleSubmitAdd}>
           <div className="text-start mb-3">
-            <label className="form-label">Add Task</label>
+            <label className="form-label">Agrega la tarea</label>
             <input
               type="text"
               className="form-control"
@@ -175,7 +184,7 @@ export const ToDoListFetch = () => {
       )}
 
       <hr className="my-1" />
-      <h2 className="text-primary mt-3">List</h2>
+      <h2 className="text-primary mt-3">Lista de tareas pendientes</h2>
 
       
       <ul className="text-start list-group">
@@ -184,7 +193,10 @@ export const ToDoListFetch = () => {
             key={item.id}
             className="list-group-item hidden-icon d-flex justify-content-between">
             
-            <div> 
+            <div
+              style={{ cursor: 'pointer'}}
+              onClick={() => toggleTaskDone(item)}
+            > 
               {item.is_done ?
                 <i className="far fa-thumbs-up text-success me-2"></i>
                 :
@@ -198,7 +210,7 @@ export const ToDoListFetch = () => {
                 onClick={() => handleEdit(item)}
                 ></i>
                 <i className="fas fa-trash text-danger"
-                onClick={() => handleDelete(item)}
+                onClick={() => handleDelete(item.id)}
                 ></i>
             </span>            
           </li>
@@ -207,13 +219,16 @@ export const ToDoListFetch = () => {
 
         <li className="list-group-item text-end">{
           todos.length == 0 
-          ? 'No task, please add a new task'
-          : todos.length + ' tasks'}
+          ? 'No hay tareas, por favor agrega tareas por hacer'
+          : todos.length + ' tareas'}
         </li>
       </ul>
 
-      <button className="btn btn-danger mt-3 onClick={handleClearAll}">
-        Clear all tasks
+      <button 
+        className="btn btn-danger mt-3" 
+        onClick={handleClearAll}
+      >
+        Limpiar todas las tareas
       </button>
     </div>
   );
